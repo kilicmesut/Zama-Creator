@@ -41,28 +41,42 @@
         .like-btn.liked {
             color: #ef4444; /* red-500 */
         }
+        .lang-btn {
+            background-color: #374151; /* gray-700 */
+            color: #9ca3af; /* gray-400 */
+        }
+        .lang-btn.active {
+            background-color: #facc15; /* yellow-400 */
+            color: #111827; /* gray-900 */
+        }
     </style>
 </head>
 <body class="bg-black text-gray-200 flex flex-col items-center min-h-screen p-4">
 
     <!-- Header -->
-    <header class="w-full max-w-7xl mx-auto px-4 sm:px-0">
-        <h1 class="text-3xl font-bold text-white tracking-wider">ZAMA</h1>
-        <div class="mt-2 border-t-4 border-yellow-400 w-full"></div>
+    <header class="w-full max-w-7xl mx-auto px-4 sm:px-0 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-white tracking-wider">ZAMA</h1>
+            <div class="mt-2 border-t-4 border-yellow-400 w-full"></div>
+        </div>
+        <div class="flex items-center space-x-1 bg-gray-800 border border-gray-700 rounded-full p-1">
+            <button id="lang-tr" class="lang-btn rounded-full px-3 py-1 text-sm font-semibold transition-colors duration-200">TR</button>
+            <button id="lang-en" class="lang-btn rounded-full px-3 py-1 text-sm font-semibold transition-colors duration-200">EN</button>
+        </div>
     </header>
     
     <main class="w-full max-w-7xl mx-auto mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Sol Taraf (Hesaplayıcı ve Liderlik Tablosu) -->
         <div class="lg:col-span-2">
             <div class="text-left mb-8">
-                <h2 class="text-4xl font-bold text-white mb-2">Creator Program Score Calculator</h2>
-                <p class="text-lg text-gray-400">Puanınızı hesaplayın ve liderlik tablosundaki yerinizi alın.</p>
+                <h2 data-lang="main-title" class="text-4xl font-bold text-white mb-2">Creator Program Score Calculator</h2>
+                <p data-lang="main-subtitle" class="text-lg text-gray-400">Puanınızı hesaplayın ve liderlik tablosundaki yerinizi alın.</p>
             </div>
 
             <!-- Sekmeli Arayüz -->
             <div class="mb-6 flex space-x-4 border-b border-gray-800">
-                <button id="calculatorTabBtn" class="tab-btn active text-lg font-semibold pb-2 px-1">Hesaplayıcı</button>
-                <button id="leaderboardTabBtn" class="tab-btn text-lg font-semibold text-gray-500 pb-2 px-1">Liderlik Tablosu</button>
+                <button id="calculatorTabBtn" data-lang="tab-calculator" class="tab-btn active text-lg font-semibold pb-2 px-1">Hesaplayıcı</button>
+                <button id="leaderboardTabBtn" data-lang="tab-leaderboard" class="tab-btn text-lg font-semibold text-gray-500 pb-2 px-1">Liderlik Tablosu</button>
             </div>
 
             <!-- HESAPLAYICI İÇERİĞİ -->
@@ -71,38 +85,38 @@
                 <div class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6 md:p-8">
                     <!-- Girdi Alanları -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <div><label for="likes" class="block text-sm font-medium text-gray-400 mb-1">Beğeni Sayısı</label><input type="number" id="likes" placeholder="150" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="retweets" class="block text-sm font-medium text-gray-400 mb-1">Retweet Sayısı</label><input type="number" id="retweets" placeholder="25" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="quotes" class="block text-sm font-medium text-gray-400 mb-1">Alıntı Sayısı</label><input type="number" id="quotes" placeholder="10" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="impressions" class="block text-sm font-medium text-gray-400 mb-1">Gösterim Sayısı</label><input type="number" id="impressions" placeholder="120000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="followers" class="block text-sm font-medium text-gray-400 mb-1">Toplam Takipçi</label><input type="number" id="followers" placeholder="5000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="smart_followers" class="block text-sm font-medium text-gray-400 mb-1">Akıllı Takipçi</label><input type="number" id="smart_followers" placeholder="1200" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="smart_engagement" class="block text-sm font-medium text-gray-400 mb-1">Akıllı Etkileşim</label><input type="number" id="smart_engagement" placeholder="50" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
-                        <div><label for="posts" class="block text-sm font-medium text-gray-400 mb-1">Toplam Gönderi</label><input type="number" id="posts" placeholder="15" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="likes" data-lang="label-likes" class="block text-sm font-medium text-gray-400 mb-1">Beğeni Sayısı</label><input type="number" id="likes" placeholder="150" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="retweets" data-lang="label-retweets" class="block text-sm font-medium text-gray-400 mb-1">Retweet Sayısı</label><input type="number" id="retweets" placeholder="25" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="quotes" data-lang="label-quotes" class="block text-sm font-medium text-gray-400 mb-1">Alıntı Sayısı</label><input type="number" id="quotes" placeholder="10" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="impressions" data-lang="label-impressions" class="block text-sm font-medium text-gray-400 mb-1">Gösterim Sayısı</label><input type="number" id="impressions" placeholder="120000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="followers" data-lang="label-followers" class="block text-sm font-medium text-gray-400 mb-1">Toplam Takipçi</label><input type="number" id="followers" placeholder="5000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="smart_followers" data-lang="label-smart_followers" class="block text-sm font-medium text-gray-400 mb-1">Akıllı Takipçi</label><input type="number" id="smart_followers" placeholder="1200" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="smart_engagement" data-lang="label-smart_engagement" class="block text-sm font-medium text-gray-400 mb-1">Akıllı Etkileşim</label><input type="number" id="smart_engagement" placeholder="50" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="posts" data-lang="label-posts" class="block text-sm font-medium text-gray-400 mb-1">Toplam Gönderi</label><input type="number" id="posts" placeholder="15" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
                     </div>
                     <div class="text-center">
-                        <button id="calculateBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg">Puanı Hesapla</button>
+                        <button id="calculateBtn" data-lang="btn-calculate" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg">Puanı Hesapla</button>
                     </div>
                 </div>
 
                 <!-- Sonuç ve Onay Alanı -->
                 <div id="results" class="hidden mt-8 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6 md:p-8">
-                     <h2 class="text-2xl font-bold text-white mb-6 text-center">Hesaplama Sonuçları</h2>
+                     <h2 data-lang="results-title" class="text-2xl font-bold text-white mb-6 text-center">Hesaplama Sonuçları</h2>
                      <div class="text-center mb-8 p-6 bg-black rounded-lg">
-                        <p class="text-lg text-gray-400 mb-2">Nihai Puanınız</p>
+                        <p data-lang="results-final-score-label" class="text-lg text-gray-400 mb-2">Nihai Puanınız</p>
                         <p id="finalScore" class="text-5xl font-bold text-yellow-400 result-value"></p>
                         <p id="penaltyInfo" class="text-sm text-yellow-500 mt-2"></p>
                     </div>
                     <div id="approvalSection" class="hidden mt-6 text-center border-t border-gray-700 pt-6">
-                        <h3 class="text-lg font-semibold text-white mb-4">Puanını Liderlik Tablosuna Ekle</h3>
+                        <h3 data-lang="approval-title" class="text-lg font-semibold text-white mb-4">Puanını Liderlik Tablosuna Ekle</h3>
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <input type="text" id="username" placeholder="Kullanıcı adınızı girin" class="w-full sm:w-64 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
-                            <button id="approveBtn" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105">Onayla ve Ekle</button>
+                            <input type="text" id="username" data-lang="approval-placeholder" placeholder="Kullanıcı adınızı girin" class="w-full sm:w-64 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
+                            <button id="approveBtn" data-lang="btn-approve" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105">Onayla ve Ekle</button>
                         </div>
                         <p id="approvalMessage" class="text-sm mt-3"></p>
                     </div>
                     <div class="border-t border-gray-700 pt-6 mt-8">
-                        <h3 class="text-xl font-semibold text-white mb-4">Detaylı Analiz</h3>
+                        <h3 data-lang="details-title" class="text-xl font-semibold text-white mb-4">Detaylı Analiz</h3>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm"><!-- Detaylar --></div>
                     </div>
                 </div>
@@ -111,14 +125,14 @@
             <!-- LİDERLİK TABLOSU İÇERİĞİ -->
             <div id="leaderboardContent" class="hidden">
                  <div class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6 md:p-8">
-                    <h2 class="text-2xl font-bold text-white mb-6 text-center">Liderlik Tablosu</h2>
+                    <h2 data-lang="leaderboard-title" class="text-2xl font-bold text-white mb-6 text-center">Liderlik Tablosu</h2>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-left">
                             <thead class="border-b border-gray-700">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3 font-medium text-gray-300">Sıra</th>
-                                    <th scope="col" class="px-4 py-3 font-medium text-gray-300">Kullanıcı</th>
-                                    <th scope="col" class="px-4 py-3 font-medium text-gray-300 text-right">Puan</th>
+                                    <th scope="col" data-lang="leaderboard-rank" class="px-4 py-3 font-medium text-gray-300">Sıra</th>
+                                    <th scope="col" data-lang="leaderboard-user" class="px-4 py-3 font-medium text-gray-300">Kullanıcı</th>
+                                    <th scope="col" data-lang="leaderboard-score" class="px-4 py-3 font-medium text-gray-300 text-right">Puan</th>
                                 </tr>
                             </thead>
                             <tbody id="leaderboardBody"></tbody>
@@ -133,19 +147,19 @@
              <div class="sticky top-8">
                 <!-- Gönderi Paylaşım Kartı -->
                 <div class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6">
-                    <h3 class="text-xl font-bold text-white mb-4">Günün Gönderisini Paylaş</h3>
-                    <p class="text-sm text-gray-400 mb-4">Herkesin görmesi için X gönderi linkinizi buraya yapıştırın. Günde sadece bir gönderi paylaşabilirsiniz.</p>
+                    <h3 data-lang="share-title" class="text-xl font-bold text-white mb-4">Günün Gönderisini Paylaş</h3>
+                    <p data-lang="share-subtitle" class="text-sm text-gray-400 mb-4">Herkesin görmesi için X gönderi linkinizi buraya yapıştırın. Günde sadece bir gönderi paylaşabilirsiniz.</p>
                     <div class="flex flex-col gap-3">
-                        <input type="text" id="submitUsername" placeholder="Kullanıcı Adınız" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
+                        <input type="text" id="submitUsername" data-lang="share-username-placeholder" placeholder="Kullanıcı Adınız" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
                         <input type="url" id="tweetUrl" placeholder="https://x.com/kullanici/status/..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
-                        <button id="submitTweetBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">Gönder</button>
+                        <button id="submitTweetBtn" data-lang="btn-share" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">Gönder</button>
                     </div>
                     <p id="tweetSubmitMessage" class="text-sm text-center mt-3"></p>
                 </div>
 
                 <!-- Gönderi Önizlemeleri -->
                 <div id="tweet-previews-container" class="mt-6 space-y-4 pr-2">
-                    <p id="tweet-loader" class="text-center text-gray-500 py-10">Gönderiler yükleniyor...</p>
+                    <p id="tweet-loader" data-lang="posts-loading" class="text-center text-gray-500 py-10">Gönderiler yükleniyor...</p>
                 </div>
             </div>
         </div>
@@ -155,20 +169,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // ************************************************************************************
-        // ÖNEMLİ NOT: EĞER VERİLER (PUAN/GÖNDERİ) KAYDEDİLMİYORSA,
-        // FIREBASE KONSOLUNDA Firestore > Rules (Kurallar) BÖLÜMÜNÜN
-        // AŞAĞIDAKİ GİBİ OLDUĞUNDAN EMİN OLUN:
-        //
-        // rules_version = '2';
-        // service cloud.firestore {
-        //   match /databases/{database}/documents {
-        //     match /{document=**} {
-        //       allow read, write: if true;
-        //     }
-        //   }
-        // }
-        // ************************************************************************************
         const firebaseConfig = {
             apiKey: "AIzaSyAD9xtuKXczPUEoNF3Y73foQMfaW6Xbodg",
             authDomain: "zama-creator-app.firebaseapp.com",
@@ -182,6 +182,71 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
+        // --- DİL ÇEVİRİ SİSTEMİ ---
+        const translations = {
+            'main-title': { tr: 'Creator Program Puan Hesaplayıcı', en: 'Creator Program Score Calculator' },
+            'main-subtitle': { tr: 'Puanınızı hesaplayın ve liderlik tablosundaki yerinizi alın.', en: 'Calculate your score and take your place on the leaderboard.' },
+            'tab-calculator': { tr: 'Hesaplayıcı', en: 'Calculator' },
+            'tab-leaderboard': { tr: 'Liderlik Tablosu', en: 'Leaderboard' },
+            'label-likes': { tr: 'Beğeni Sayısı', en: 'Number of Likes' },
+            'label-retweets': { tr: 'Retweet Sayısı', en: 'Number of Retweets' },
+            'label-quotes': { tr: 'Alıntı Sayısı', en: 'Number of Quotes' },
+            'label-impressions': { tr: 'Gösterim Sayısı', en: 'Number of Impressions' },
+            'label-followers': { tr: 'Toplam Takipçi', en: 'Total Followers' },
+            'label-smart_followers': { tr: 'Akıllı Takipçi', en: 'Smart Followers' },
+            'label-smart_engagement': { tr: 'Akıllı Etkileşim', en: 'Smart Engagement' },
+            'label-posts': { tr: 'Toplam Gönderi', en: 'Total Posts' },
+            'btn-calculate': { tr: 'Puanı Hesapla', en: 'Calculate Score' },
+            'results-title': { tr: 'Hesaplama Sonuçları', en: 'Calculation Results' },
+            'results-final-score-label': { tr: 'Nihai Puanınız', en: 'Your Final Score' },
+            'approval-title': { tr: 'Puanını Liderlik Tablosuna Ekle', en: 'Add Your Score to the Leaderboard' },
+            'approval-placeholder': { tr: 'Kullanıcı adınızı girin', en: 'Enter your username' },
+            'btn-approve': { tr: 'Onayla ve Ekle', en: 'Approve and Add' },
+            'details-title': { tr: 'Detaylı Analiz', en: 'Detailed Analysis' },
+            'leaderboard-title': { tr: 'Liderlik Tablosu', en: 'Leaderboard' },
+            'leaderboard-rank': { tr: 'Sıra', en: 'Rank' },
+            'leaderboard-user': { tr: 'Kullanıcı', en: 'User' },
+            'leaderboard-score': { tr: 'Puan', en: 'Score' },
+            'share-title': { tr: 'Günün Gönderisini Paylaş', en: 'Share Post of the Day' },
+            'share-subtitle': { tr: 'Herkesin görmesi için X gönderi linkinizi buraya yapıştırın. Günde sadece bir gönderi paylaşabilirsiniz.', en: 'Paste your X post link here for everyone to see. You can only share one post per day.' },
+            'share-username-placeholder': { tr: 'Kullanıcı Adınız', en: 'Your Username' },
+            'btn-share': { tr: 'Gönder', en: 'Submit' },
+            'posts-loading': { tr: 'Gönderiler yükleniyor...', en: 'Loading posts...' },
+            'posts-empty': { tr: 'Henüz paylaşılan gönderi yok.', en: 'No posts shared yet.' },
+            'comments-loading': { tr: 'Yorumlar yükleniyor...', en: 'Loading comments...' },
+            'comments-empty': { tr: 'Henüz yorum yok.', en: 'No comments yet.' },
+            'comment-name-placeholder': { tr: 'Adınız', en: 'Your Name' },
+            'comment-text-placeholder': { tr: 'Yorumunuzu yazın...', en: 'Write your comment...' },
+            'btn-comment-submit': { tr: 'Gönder', en: 'Submit' },
+            'comments-title': { tr: 'Yorumlar', en: 'Comments' },
+            'ineligible-text': { tr: 'Uygun Değil', en: 'Not Eligible' },
+            'ineligible-reason': { tr: "Liderlik tablosu için en az 2 gönderi ve 0'dan fazla gösterim gereklidir.", en: 'At least 2 posts and more than 0 impressions are required for the leaderboard.'},
+            'disqualified-text': { tr: '0 (Diskalifiye)', en: '0 (Disqualified)'},
+            'disqualified-reason': { tr: "Etkileşim Oranı (ER%) %20'yi aştığı için puan sıfırlandı.", en: 'Score reset to zero because Engagement Rate (ER%) exceeded 20%.'},
+            'penalty-info-text': {tr: "ER% > 10 ve Gösterim < 50k olduğu için 0.30x ceza uygulandı.", en: "0.30x penalty applied for ER% > 10 and Impressions < 50k."}
+        };
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            for (const key in translations) {
+                const elements = document.querySelectorAll(`[data-lang="${key}"]`);
+                elements.forEach(el => {
+                    const translation = translations[key][lang];
+                    if (el.placeholder !== undefined) {
+                        el.placeholder = translation;
+                    }
+                    el.textContent = translation;
+                });
+            }
+            localStorage.setItem('language', lang);
+            document.getElementById('lang-tr').classList.toggle('active', lang === 'tr');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+        }
+
+        document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+        // --------------------------------
+
         let lastCalculatedScore = null;
         const approveBtn = document.getElementById('approveBtn');
         const submitTweetBtn = document.getElementById('submitTweetBtn');
@@ -192,11 +257,17 @@
             const username = usernameInput.value.trim();
             const approvalMessage = document.getElementById('approvalMessage');
 
-            if (!username) { alert("Lütfen bir kullanıcı adı girin."); return; }
-            if (lastCalculatedScore === null) { alert("Önce bir puan hesaplamalısınız."); return; }
+            if (!username) { 
+                alert(localStorage.getItem('language') === 'en' ? 'Please enter a username.' : 'Lütfen bir kullanıcı adı girin.'); 
+                return; 
+            }
+            if (lastCalculatedScore === null) { 
+                alert(localStorage.getItem('language') === 'en' ? 'You must calculate a score first.' : 'Önce bir puan hesaplamalısınız.'); 
+                return; 
+            }
 
             approveBtn.disabled = true;
-            approveBtn.textContent = "Ekleniyor...";
+            approveBtn.textContent = localStorage.getItem('language') === 'en' ? "Adding..." : "Ekleniyor...";
             approvalMessage.textContent = "";
             
             try {
@@ -206,11 +277,11 @@
                     createdAt: serverTimestamp()
                 });
 
-                approveBtn.textContent = "Eklendi!";
+                approveBtn.textContent = localStorage.getItem('language') === 'en' ? "Added!" : "Eklendi!";
                 approveBtn.classList.replace('bg-green-600', 'bg-blue-500');
                 approveBtn.classList.replace('hover:bg-green-700', 'bg-blue-500');
                 
-                approvalMessage.textContent = "Puanınız liderlik tablosuna başarıyla eklendi!";
+                approvalMessage.textContent = localStorage.getItem('language') === 'en' ? "Your score has been successfully added to the leaderboard!" : "Puanınız liderlik tablosuna başarıyla eklendi!";
                 approvalMessage.className = 'text-sm mt-3 text-green-400';
                 
                 usernameInput.value = '';
@@ -219,7 +290,7 @@
                 setTimeout(() => {
                     document.getElementById('approvalSection').classList.add('hidden');
                     approveBtn.disabled = false;
-                    approveBtn.textContent = "Onayla ve Ekle";
+                    approveBtn.textContent = translations['btn-approve'][localStorage.getItem('language') || 'tr'];
                     approveBtn.classList.replace('bg-blue-500', 'bg-green-600');
                     approveBtn.classList.add('hover:bg-green-700');
                     approvalMessage.textContent = "";
@@ -227,10 +298,10 @@
 
             } catch (error) {
                 console.error("Firebase Yazma Hatası (Puan): ", error);
-                approvalMessage.textContent = "Bir hata oluştu. Veritabanı kurallarınızı kontrol edin.";
+                approvalMessage.textContent = localStorage.getItem('language') === 'en' ? "An error occurred. Check your database rules." : "Bir hata oluştu. Veritabanı kurallarınızı kontrol edin.";
                 approvalMessage.className = 'text-sm mt-3 text-red-500';
                 approveBtn.disabled = false;
-                approveBtn.textContent = "Onayla ve Ekle";
+                approveBtn.textContent = translations['btn-approve'][localStorage.getItem('language') || 'tr'];
             }
         });
         
@@ -241,23 +312,24 @@
             const username = usernameInput.value.trim();
             const tweetUrl = tweetUrlInput.value.trim();
             const messageEl = document.getElementById('tweetSubmitMessage');
+            const currentLang = localStorage.getItem('language') || 'tr';
 
             if(!username || !tweetUrl) {
-                messageEl.textContent = "Kullanıcı adı ve gönderi linki zorunludur.";
+                messageEl.textContent = currentLang === 'en' ? "Username and post link are required." : "Kullanıcı adı ve gönderi linki zorunludur.";
                 messageEl.className = 'text-sm text-center mt-3 text-red-500'; return;
             }
             if (!/^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+/.test(tweetUrl)) {
-                 messageEl.textContent = "Lütfen geçerli bir X gönderi linki girin.";
+                 messageEl.textContent = currentLang === 'en' ? "Please enter a valid X post link." : "Lütfen geçerli bir X gönderi linki girin.";
                  messageEl.className = 'text-sm text-center mt-3 text-red-500'; return;
             }
             const today = new Date().toISOString().split('T')[0];
             if (localStorage.getItem('lastTweetSubmissionDate') === today) {
-                messageEl.textContent = "Bugün zaten bir gönderi paylaştınız.";
+                messageEl.textContent = currentLang === 'en' ? "You have already shared a post today." : "Bugün zaten bir gönderi paylaştınız.";
                 messageEl.className = 'text-sm text-center mt-3 text-yellow-500'; return;
             }
 
             submitTweetBtn.disabled = true;
-            submitTweetBtn.textContent = "Gönderiliyor...";
+            submitTweetBtn.textContent = currentLang === 'en' ? "Submitting..." : "Gönderiliyor...";
             messageEl.textContent = "";
 
             try {
@@ -266,20 +338,20 @@
                 });
                 
                 localStorage.setItem('lastTweetSubmissionDate', today);
-                submitTweetBtn.textContent = "Gönderildi!";
+                submitTweetBtn.textContent = currentLang === 'en' ? "Submitted!" : "Gönderildi!";
                 submitTweetBtn.classList.replace('bg-blue-600', 'bg-green-600');
                 submitTweetBtn.classList.replace('hover:bg-blue-700', 'bg-green-600');
-                messageEl.textContent = "Gönderiniz başarıyla paylaşıldı!";
+                messageEl.textContent = currentLang === 'en' ? "Your post has been shared successfully!" : "Gönderiniz başarıyla paylaşıldı!";
                 messageEl.className = 'text-sm text-center mt-3 text-green-400';
                 tweetUrlInput.value = ''; usernameInput.value = '';
             } catch (error) {
                 console.error("Firebase Yazma Hatası (Gönderi): ", error);
-                messageEl.textContent = "Bir hata oluştu. Veritabanı kurallarınızı kontrol edin.";
+                messageEl.textContent = currentLang === 'en' ? "An error occurred. Check your database rules." : "Bir hata oluştu. Veritabanı kurallarınızı kontrol edin.";
                 messageEl.className = 'text-sm text-center mt-3 text-red-500';
             } finally {
                  setTimeout(() => {
                     submitTweetBtn.disabled = false;
-                    submitTweetBtn.textContent = "Gönder";
+                    submitTweetBtn.textContent = translations['btn-share'][currentLang];
                     submitTweetBtn.classList.replace('bg-green-600', 'bg-blue-600');
                     submitTweetBtn.classList.add('hover:bg-blue-700');
                     messageEl.textContent = "";
@@ -291,11 +363,12 @@
         const postsQuery = query(collection(db, "daily_posts"), orderBy("submittedAt", "desc"));
         onSnapshot(postsQuery, (snapshot) => {
             const container = document.getElementById('tweet-previews-container');
+            const currentLang = localStorage.getItem('language') || 'tr';
             container.innerHTML = ''; 
             document.getElementById('tweet-loader')?.remove();
 
             if (snapshot.empty) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-10">Henüz paylaşılan gönderi yok.</p>';
+                container.innerHTML = `<p class="text-center text-gray-500 py-10">${translations['posts-empty'][currentLang]}</p>`;
                 return;
             }
 
@@ -311,7 +384,6 @@
                     postCard.className = 'bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-4';
                     
                     const tweetContainer = document.createElement('div');
-                    // GÖNDERİ ÖNİZLEMESİ: Twitter'ın kendi scriptiyle oluşturuluyor.
                     twttr.widgets.createTweet(tweetId, tweetContainer, { theme: 'dark', conversation: 'none', dnt: true });
 
                     const actionsBar = document.createElement('div');
@@ -324,7 +396,7 @@
 
                     const commentBtn = document.createElement('button');
                     commentBtn.className = 'flex items-center gap-2 hover:text-blue-400 transition';
-                    commentBtn.innerHTML = `<i class="fa-solid fa-comment"></i> Yorumlar`;
+                    commentBtn.innerHTML = `<i class="fa-solid fa-comment"></i> <span data-lang="comments-title">${translations['comments-title'][currentLang]}</span>`;
                     commentBtn.onclick = () => toggleComments(postId);
                     
                     actionsBar.appendChild(likeBtn);
@@ -343,7 +415,10 @@
 
         }, (error) => {
             console.error("Gönderiler yüklenirken Firestore hatası: ", error);
-            document.getElementById('tweet-previews-container').innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center"><p class="font-semibold text-red-300">Gönderiler Yüklenemedi</p><p class="text-sm text-red-400 mt-1">Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi veya kural sorunudur.)</p></div>`;
+            const currentLang = localStorage.getItem('language') || 'tr';
+            const errorTitle = currentLang === 'en' ? 'Could not load posts' : 'Gönderiler Yüklenemedi';
+            const errorText = currentLang === 'en' ? 'Please check the browser console. (Usually a missing Firestore index or rules issue.)' : 'Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi veya kural sorunudur.)';
+            document.getElementById('tweet-previews-container').innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center"><p class="font-semibold text-red-300">${errorTitle}</p><p class="text-sm text-red-400 mt-1">${errorText}</p></div>`;
         });
         
         async function handleLike(postId) {
@@ -361,18 +436,19 @@
 
         async function toggleComments(postId) {
             const commentsSection = document.getElementById(`comments-section-${postId}`);
+            const currentLang = localStorage.getItem('language') || 'tr';
             if (commentsSection.classList.toggle('hidden')) return;
 
-            commentsSection.innerHTML = '<p class="text-gray-500 text-sm">Yorumlar yükleniyor...</p>';
+            commentsSection.innerHTML = `<p class="text-gray-500 text-sm">${translations['comments-loading'][currentLang]}</p>`;
             
             const commentsQuery = query(collection(db, `daily_posts/${postId}/comments`), orderBy("createdAt", "asc"));
             const snapshot = await getDocs(commentsQuery);
             
             commentsSection.innerHTML = `
                 <div class="flex gap-2">
-                    <input type="text" id="comment-user-${postId}" placeholder="Adınız" class="flex-1 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-sm">
-                    <input type="text" id="comment-text-${postId}" placeholder="Yorumunuzu yazın..." class="flex-2 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-sm w-full">
-                    <button id="comment-submit-${postId}" class="bg-yellow-500 text-black px-3 rounded-md text-sm font-semibold">Gönder</button>
+                    <input type="text" id="comment-user-${postId}" placeholder="${translations['comment-name-placeholder'][currentLang]}" class="flex-1 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-sm">
+                    <input type="text" id="comment-text-${postId}" placeholder="${translations['comment-text-placeholder'][currentLang]}" class="flex-2 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-sm w-full">
+                    <button id="comment-submit-${postId}" class="bg-yellow-500 text-black px-3 rounded-md text-sm font-semibold">${translations['btn-comment-submit'][currentLang]}</button>
                 </div>
                 <div id="comments-list-${postId}" class="space-y-2 pt-2 border-t border-gray-700 mt-3"></div>`;
 
@@ -383,7 +459,6 @@
 
                 try {
                     await addDoc(collection(db, `daily_posts/${postId}/comments`), { username, text, createdAt: serverTimestamp() });
-                    // Yorum eklendikten sonra bölümü yenile
                     const currentlyOpen = !commentsSection.classList.contains('hidden');
                     if(currentlyOpen) {
                         toggleComments(postId); // Kapat
@@ -391,14 +466,14 @@
                     }
                 } catch(e) {
                      console.error("Firebase Yazma Hatası (Yorum): ", e);
-                     alert("Yorum gönderilemedi. Lütfen veritabanı kurallarınızı kontrol edin.");
+                     alert(currentLang === 'en' ? "Could not send comment. Please check your database rules." : "Yorum gönderilemedi. Lütfen veritabanı kurallarınızı kontrol edin.");
                 }
             };
 
             const commentsList = document.getElementById(`comments-list-${postId}`);
             commentsList.innerHTML = '';
             if (snapshot.empty) {
-                commentsList.innerHTML = '<p class="text-gray-600 text-xs text-center py-2">Henüz yorum yok.</p>';
+                commentsList.innerHTML = `<p class="text-gray-600 text-xs text-center py-2">${translations['comments-empty'][currentLang]}</p>`;
             } else {
                 snapshot.forEach(doc => {
                     const comment = doc.data();
@@ -438,8 +513,10 @@
         onSnapshot(q, (snapshot) => {
             const leaderboardBody = document.getElementById('leaderboardBody');
             leaderboardBody.innerHTML = '';
+            const currentLang = localStorage.getItem('language') || 'tr';
             if (snapshot.empty) {
-                leaderboardBody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-gray-500">Henüz sıralamada kimse yok. İlk sen ol!</td></tr>';
+                const emptyText = currentLang === 'en' ? 'Nobody is on the leaderboard yet. Be the first!' : 'Henüz sıralamada kimse yok. İlk sen ol!';
+                leaderboardBody.innerHTML = `<tr><td colspan="3" class="text-center py-10 text-gray-500">${emptyText}</td></tr>`;
                 return;
             }
             snapshot.forEach((doc, index) => {
@@ -471,21 +548,22 @@
             
             const finalScoreEl = document.getElementById('finalScore');
             const penaltyInfoEl = document.getElementById('penaltyInfo');
+            const currentLang = localStorage.getItem('language') || 'tr';
 
             finalScoreEl.classList.remove('text-red-500', 'text-yellow-400');
-            penaltyInfoEl.textContent = result.penaltyInfo;
+            penaltyInfoEl.textContent = result.penaltyInfo ? translations['penalty-info-text'][currentLang] : '';
 
             if (result.ineligible) {
-                finalScoreEl.textContent = "Uygun Değil";
+                finalScoreEl.textContent = translations['ineligible-text'][currentLang];
                 finalScoreEl.classList.add('text-red-500');
-                penaltyInfoEl.textContent = "Liderlik tablosu için en az 2 gönderi ve 0'dan fazla gösterim gereklidir.";
+                penaltyInfoEl.textContent = translations['ineligible-reason'][currentLang];
                 clearDetails(); return;
             }
             
             if (result.disqualified) {
-                finalScoreEl.textContent = "0 (Diskalifiye)";
+                finalScoreEl.textContent = translations['disqualified-text'][currentLang];
                 finalScoreEl.classList.add('text-red-500');
-                penaltyInfoEl.textContent = "Etkileşim Oranı (ER%) %20'yi aştığı için puan sıfırlandı.";
+                penaltyInfoEl.textContent = translations['disqualified-reason'][currentLang];
                 document.getElementById('er_percent').textContent = result.er_percent.toFixed(2) + '%';
                 clearDetails(true); return;
             }
@@ -549,6 +627,12 @@
             result.details = {srm, sf, imp, qW, eng: eng_raw, engObs, er_cap, effEng, clamp, seng, qe, postMult, erMult, engageBlock};
             return result;
         }
+
+        // Dil ayarını sayfa yüklendiğinde uygula
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('language') || 'tr';
+            setLanguage(savedLang);
+        });
     </script>
 </body>
 </html>
