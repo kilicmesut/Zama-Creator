@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <!-- Twitter Widget Script -->
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <style>
@@ -33,10 +34,12 @@
             transition: all 0.2s ease-in-out;
             border-bottom: 2px solid transparent;
         }
-        /* Twitter embed'leri için stil */
         #tweet-previews-container {
-            height: 100vh; /* Ekran yüksekliği kadar */
-            overflow-y: auto; /* Dikey scrollbar */
+            height: calc(100vh - 10rem);
+            overflow-y: auto;
+        }
+        .like-btn.liked {
+            color: #ef4444; /* red-500 */
         }
     </style>
 </head>
@@ -141,7 +144,7 @@
                 </div>
 
                 <!-- Gönderi Önizlemeleri -->
-                <div id="tweet-previews-container" class="mt-6 space-y-4">
+                <div id="tweet-previews-container" class="mt-6 space-y-4 pr-2">
                     <p id="tweet-loader" class="text-center text-gray-500 py-10">Gönderiler yükleniyor...</p>
                 </div>
             </div>
@@ -149,11 +152,9 @@
     </main>
 
     <script type="module">
-        // Firebase SDK'larını içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAD9xtuKXczPUEoNF3Y73foQMfaW6Xbodg",
             authDomain: "zama-creator-app.firebaseapp.com",
@@ -168,12 +169,12 @@
         const db = getFirestore(app);
         
         let lastCalculatedScore = null;
-        // Element referansları...
         const approveBtn = document.getElementById('approveBtn');
         const submitTweetBtn = document.getElementById('submitTweetBtn');
         
         // --- PUAN ONAYLAMA ---
         approveBtn.addEventListener('click', async () => {
+            // ... (Mevcut kod aynı kalıyor, zaten doğru çalışıyor)
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
             if (!username) { alert("Lütfen bir kullanıcı adı girin."); return; }
@@ -190,10 +191,12 @@
                 });
 
                 approveBtn.textContent = "Eklendi!";
-                approveBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                approveBtn.classList.add('bg-blue-500');
-                document.getElementById('approvalMessage').textContent = "Puanınız liderlik tablosuna başarıyla eklendi!";
-                document.getElementById('approvalMessage').classList.add('text-green-400');
+                approveBtn.classList.replace('bg-green-600', 'bg-blue-500');
+                approveBtn.classList.replace('hover:bg-green-700', 'bg-blue-500');
+                
+                const approvalMessage = document.getElementById('approvalMessage');
+                approvalMessage.textContent = "Puanınız liderlik tablosuna başarıyla eklendi!";
+                approvalMessage.className = 'text-sm mt-3 text-green-400';
                 
                 usernameInput.value = '';
                 lastCalculatedScore = null;
@@ -202,16 +205,15 @@
                     document.getElementById('approvalSection').classList.add('hidden');
                     approveBtn.disabled = false;
                     approveBtn.textContent = "Onayla ve Ekle";
-                    approveBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                    approveBtn.classList.remove('bg-blue-500');
-                    document.getElementById('approvalMessage').textContent = "";
-                    document.getElementById('approvalMessage').classList.remove('text-green-400', 'text-red-500');
+                    approveBtn.classList.replace('bg-blue-500', 'bg-green-600');
+                    approveBtn.classList.add('hover:bg-green-700');
+                    approvalMessage.textContent = "";
                 }, 2500);
 
             } catch (error) {
                 console.error("Puan eklenirken hata oluştu: ", error);
                 document.getElementById('approvalMessage').textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
-                document.getElementById('approvalMessage').classList.add('text-red-500');
+                document.getElementById('approvalMessage').className = 'text-sm mt-3 text-red-500';
                 approveBtn.disabled = false;
                 approveBtn.textContent = "Onayla ve Ekle";
             }
@@ -219,6 +221,7 @@
         
         // --- GÖNDERİ PAYLAŞMA ---
         submitTweetBtn.addEventListener('click', async () => {
+            // ... (Mevcut kod aynı kalıyor, zaten doğru çalışıyor)
             const usernameInput = document.getElementById('submitUsername');
             const tweetUrlInput = document.getElementById('tweetUrl');
             const username = usernameInput.value.trim();
@@ -227,22 +230,16 @@
 
             if(!username || !tweetUrl) {
                 messageEl.textContent = "Kullanıcı adı ve gönderi linki zorunludur.";
-                messageEl.className = 'text-sm text-center mt-3 text-red-500';
-                return;
+                messageEl.className = 'text-sm text-center mt-3 text-red-500'; return;
             }
-
             if (!/^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+/.test(tweetUrl)) {
                  messageEl.textContent = "Lütfen geçerli bir X gönderi linki girin.";
-                 messageEl.className = 'text-sm text-center mt-3 text-red-500';
-                 return;
+                 messageEl.className = 'text-sm text-center mt-3 text-red-500'; return;
             }
-            
             const today = new Date().toISOString().split('T')[0];
-            const lastSubmission = localStorage.getItem('lastTweetSubmissionDate');
-            if (lastSubmission === today) {
+            if (localStorage.getItem('lastTweetSubmissionDate') === today) {
                 messageEl.textContent = "Bugün zaten bir gönderi paylaştınız.";
-                messageEl.className = 'text-sm text-center mt-3 text-yellow-500';
-                return;
+                messageEl.className = 'text-sm text-center mt-3 text-yellow-500'; return;
             }
 
             submitTweetBtn.disabled = true;
@@ -251,20 +248,16 @@
 
             try {
                 await addDoc(collection(db, "daily_posts"), {
-                    username: username,
-                    postUrl: tweetUrl,
-                    submittedAt: serverTimestamp()
+                    username: username, postUrl: tweetUrl, submittedAt: serverTimestamp(), likeCount: 0
                 });
                 
                 localStorage.setItem('lastTweetSubmissionDate', today);
                 submitTweetBtn.textContent = "Gönderildi!";
-                submitTweetBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                submitTweetBtn.classList.add('bg-green-600');
+                submitTweetBtn.classList.replace('bg-blue-600', 'bg-green-600');
+                submitTweetBtn.classList.replace('hover:bg-blue-700', 'bg-green-600');
                 messageEl.textContent = "Gönderiniz başarıyla paylaşıldı!";
                 messageEl.className = 'text-sm text-center mt-3 text-green-400';
-                tweetUrlInput.value = '';
-                usernameInput.value = '';
-
+                tweetUrlInput.value = ''; usernameInput.value = '';
             } catch (error) {
                 console.error("Gönderi paylaşılırken hata: ", error);
                 messageEl.textContent = "Bir hata oluştu. Tekrar deneyin.";
@@ -273,8 +266,8 @@
                  setTimeout(() => {
                     submitTweetBtn.disabled = false;
                     submitTweetBtn.textContent = "Gönder";
-                    submitTweetBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                    submitTweetBtn.classList.remove('bg-green-600');
+                    submitTweetBtn.classList.replace('bg-green-600', 'bg-blue-600');
+                    submitTweetBtn.classList.add('hover:bg-blue-700');
                     messageEl.textContent = "";
                 }, 3000);
             }
@@ -292,46 +285,107 @@
                 return;
             }
 
-            snapshot.forEach(doc => {
-                const post = doc.data();
+            const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
+
+            snapshot.forEach(docSnap => {
+                const post = docSnap.data();
+                const postId = docSnap.id;
                 const tweetId = post.postUrl.split('status/')[1]?.split('?')[0];
 
                 if(tweetId) {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-4';
+                    
                     const tweetContainer = document.createElement('div');
-                    tweetContainer.className = 'tweet-embed-container';
+                    twttr.widgets.createTweet(tweetId, tweetContainer, { theme: 'dark', conversation: 'none', dnt: true });
 
-                    const blockquote = document.createElement('blockquote');
-                    blockquote.className = 'twitter-tweet';
-                    blockquote.setAttribute('data-theme', 'dark');
+                    const actionsBar = document.createElement('div');
+                    actionsBar.className = 'flex items-center justify-between text-gray-400 mt-3 pt-3 border-t border-gray-700';
 
-                    const link = document.createElement('a');
-                    link.href = post.postUrl;
-                    link.textContent = `Loading tweet by ${post.username}...`;
+                    const likeBtn = document.createElement('button');
+                    likeBtn.className = `like-btn flex items-center gap-2 hover:text-red-500 transition ${likedPosts.includes(postId) ? 'liked' : ''}`;
+                    likeBtn.innerHTML = `<i class="fa-solid fa-heart"></i> <span id="like-count-${postId}">${post.likeCount || 0}</span>`;
+                    likeBtn.onclick = () => handleLike(postId);
 
-                    blockquote.appendChild(link);
-                    tweetContainer.appendChild(blockquote);
-                    container.appendChild(tweetContainer);
+                    const commentBtn = document.createElement('button');
+                    commentBtn.className = 'flex items-center gap-2 hover:text-blue-400 transition';
+                    commentBtn.innerHTML = `<i class="fa-solid fa-comment"></i> Yorumlar`;
+                    commentBtn.onclick = () => toggleComments(postId);
+                    
+                    actionsBar.appendChild(likeBtn);
+                    actionsBar.appendChild(commentBtn);
+
+                    const commentsSection = document.createElement('div');
+                    commentsSection.id = `comments-section-${postId}`;
+                    commentsSection.className = 'hidden mt-4 space-y-3';
+                    
+                    postCard.appendChild(tweetContainer);
+                    postCard.appendChild(actionsBar);
+                    postCard.appendChild(commentsSection);
+                    container.appendChild(postCard);
                 }
             });
 
-            if (typeof twttr !== 'undefined' && twttr.widgets) {
-                twttr.widgets.load(container);
-            }
         }, (error) => {
             console.error("Gönderiler yüklenirken Firestore hatası: ", error);
-            const container = document.getElementById('tweet-previews-container');
-            container.innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center">
-                <p class="font-semibold text-red-300">Gönderiler Yüklenemedi</p>
-                <p class="text-sm text-red-400 mt-1">Bir hata oluştu. Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi sorunudur.)</p>
-            </div>`;
+            document.getElementById('tweet-previews-container').innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center"><p class="font-semibold text-red-300">Gönderiler Yüklenemedi</p><p class="text-sm text-red-400 mt-1">Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi sorunudur.)</p></div>`;
         });
+        
+        async function handleLike(postId) {
+            const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
+            if (likedPosts.includes(postId)) return;
 
+            const postRef = doc(db, "daily_posts", postId);
+            try {
+                await updateDoc(postRef, { likeCount: increment(1) });
+                likedPosts.push(postId);
+                localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+                document.querySelector(`button[onclick="handleLike('${postId}')"]`).classList.add('liked');
+            } catch (e) { console.error("Beğenme hatası: ", e); }
+        }
 
-        // Geri kalan tüm JavaScript kodu (calculateScore, sekmeler vb.) buraya gelecek...
+        async function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-section-${postId}`);
+            if (commentsSection.classList.toggle('hidden')) return;
+
+            commentsSection.innerHTML = '<p class="text-gray-500 text-sm">Yorumlar yükleniyor...</p>';
+            
+            const commentsQuery = query(collection(db, `daily_posts/${postId}/comments`), orderBy("createdAt", "asc"));
+            const snapshot = await getDocs(commentsQuery);
+            
+            commentsSection.innerHTML = `
+                <div class="flex gap-2">
+                    <input type="text" id="comment-user-${postId}" placeholder="Adınız" class="flex-1 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-sm">
+                    <input type="text" id="comment-text-${postId}" placeholder="Yorumunuzu yazın..." class="flex-2 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-sm w-full">
+                    <button id="comment-submit-${postId}" class="bg-yellow-500 text-black px-3 rounded-md text-sm font-semibold">Gönder</button>
+                </div>
+                <div id="comments-list-${postId}" class="space-y-2 pt-2 border-t border-gray-700 mt-3"></div>`;
+
+            document.getElementById(`comment-submit-${postId}`).onclick = async () => {
+                const username = document.getElementById(`comment-user-${postId}`).value.trim();
+                const text = document.getElementById(`comment-text-${postId}`).value.trim();
+                if (!username || !text) return;
+                await addDoc(collection(db, `daily_posts/${postId}/comments`), { username, text, createdAt: serverTimestamp() });
+                toggleComments(postId); 
+                toggleComments(postId);
+            };
+
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            commentsList.innerHTML = '';
+            if (snapshot.empty) {
+                commentsList.innerHTML = '<p class="text-gray-600 text-xs text-center py-2">Henüz yorum yok.</p>';
+            } else {
+                snapshot.forEach(doc => {
+                    const comment = doc.data();
+                    commentsList.innerHTML += `<div class="text-xs p-2 bg-black rounded-md"><p><strong class="font-semibold text-yellow-400">${comment.username}:</strong> ${comment.text}</p></div>`;
+                });
+            }
+        }
+
+        // Geri kalan JavaScript kodu (sekme yönetimi, puan hesaplama vb.)
         const calculateBtn = document.getElementById('calculateBtn');
         const resultsDiv = document.getElementById('results');
         const approvalSection = document.getElementById('approvalSection');
-        const approvalMessage = document.getElementById('approvalMessage');
         const calculatorTabBtn = document.getElementById('calculatorTabBtn');
         const leaderboardTabBtn = document.getElementById('leaderboardTabBtn');
         const calculatorContent = document.getElementById('calculatorContent');
@@ -341,16 +395,14 @@
             calculatorContent.classList.remove('hidden');
             leaderboardContent.classList.add('hidden');
             calculatorTabBtn.classList.add('active', 'text-white');
-            calculatorTabBtn.classList.remove('text-gray-500');
             leaderboardTabBtn.classList.remove('active', 'text-white');
-            leaderboardTabBtn.classList.add('text-gray-500');
+            calculatorTabBtn.classList.add('text-gray-500');
         });
 
         leaderboardTabBtn.addEventListener('click', () => {
             leaderboardContent.classList.remove('hidden');
             calculatorContent.classList.add('hidden');
             leaderboardTabBtn.classList.add('active', 'text-white');
-            leaderboardTabBtn.classList.remove('text-gray-500');
             calculatorTabBtn.classList.remove('active', 'text-white');
             calculatorTabBtn.classList.add('text-gray-500');
         });
@@ -370,13 +422,7 @@
                 const rank = index + 1;
                 const rowClass = rank <= 3 ? 'bg-yellow-500/10' : '';
 
-                const row = `
-                    <tr class="border-b border-gray-800 ${rowClass}">
-                        <td class="px-4 py-3 font-medium">${rank}</td>
-                        <td class="px-4 py-3">${data.name}</td>
-                        <td class="px-4 py-3 font-mono text-right text-yellow-400">${data.score.toFixed(2)}</td>
-                    </tr>
-                `;
+                const row = `<tr class="border-b border-gray-800 ${rowClass}"><td class="px-4 py-3 font-medium">${rank}</td><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3 font-mono text-right text-yellow-400">${data.score.toFixed(2)}</td></tr>`;
                 leaderboardBody.innerHTML += row;
             });
         });
@@ -397,7 +443,6 @@
             
             resultsDiv.classList.remove('hidden');
             approvalSection.classList.add('hidden');
-            approvalMessage.textContent = '';
             
             const finalScoreEl = document.getElementById('finalScore');
             const penaltyInfoEl = document.getElementById('penaltyInfo');
@@ -409,8 +454,7 @@
                 finalScoreEl.textContent = "Uygun Değil";
                 finalScoreEl.classList.add('text-red-500');
                 penaltyInfoEl.textContent = "Liderlik tablosu için en az 2 gönderi ve 0'dan fazla gösterim gereklidir.";
-                clearDetails();
-                return;
+                clearDetails(); return;
             }
             
             if (result.disqualified) {
@@ -418,30 +462,13 @@
                 finalScoreEl.classList.add('text-red-500');
                 penaltyInfoEl.textContent = "Etkileşim Oranı (ER%) %20'yi aştığı için puan sıfırlandı.";
                 document.getElementById('er_percent').textContent = result.er_percent.toFixed(2) + '%';
-                clearDetails(true);
-                return;
+                clearDetails(true); return;
             }
 
             finalScoreEl.textContent = result.finalScore.toFixed(2);
             finalScoreEl.classList.add('text-yellow-400');
 
-            document.querySelector('#results .grid').innerHTML = `
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ER% (Etkileşim Oranı):</span><span id="er_percent" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SRM (Ölçek Oranı Ç.):</span><span id="srm" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SF (Akıllı Takipçi F.):</span><span id="sf" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">IMP (Gösterim Karekökü):</span><span id="imp" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">qW (Alıntı Ağırlığı):</span><span id="qW" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ENG (Ham Etkileşim):</span><span id="eng" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">EngObs (Gözlemlenen Etk.):</span><span id="engObs" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ER_cap (ER Limiti):</span><span id="er_cap" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">EffEng (Etkin Etkileşim):</span><span id="effEng" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">Clamp (Sıkıştırma):</span><span id="clamp" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SENG (Akıllı Etk. Puanı):</span><span id="seng" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">QE (Erişim Verimliliği):</span><span id="qe" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">postMult (Gönderi Ç.):</span><span id="postMult" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">erMult (ER Çarpanı):</span><span id="erMult" class="font-mono float-right text-gray-300"></span></div>
-                <div class="p-3 bg-gray-800/50 rounded-md col-span-2 md:col-span-1"><span class="font-medium text-gray-400">engageBlock (Etkileşim B.):</span><span id="engageBlock" class="font-mono float-right text-gray-300"></span></div>
-            `;
+            document.querySelector('#results .grid').innerHTML = `<div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ER% (Etkileşim Oranı):</span><span id="er_percent" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SRM (Ölçek Oranı Ç.):</span><span id="srm" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SF (Akıllı Takipçi F.):</span><span id="sf" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">IMP (Gösterim Karekökü):</span><span id="imp" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">qW (Alıntı Ağırlığı):</span><span id="qW" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ENG (Ham Etkileşim):</span><span id="eng" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">EngObs (Gözlemlenen Etk.):</span><span id="engObs" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ER_cap (ER Limiti):</span><span id="er_cap" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">EffEng (Etkin Etkileşim):</span><span id="effEng" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">Clamp (Sıkıştırma):</span><span id="clamp" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SENG (Akıllı Etk. Puanı):</span><span id="seng" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">QE (Erişim Verimliliği):</span><span id="qe" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">postMult (Gönderi Ç.):</span><span id="postMult" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">erMult (ER Çarpanı):</span><span id="erMult" class="font-mono float-right text-gray-300"></span></div><div class="p-3 bg-gray-800/50 rounded-md col-span-2 md:col-span-1"><span class="font-medium text-gray-400">engageBlock (Etkileşim B.):</span><span id="engageBlock" class="font-mono float-right text-gray-300"></span></div>`;
             
             document.getElementById('er_percent').textContent = result.er_percent.toFixed(2) + '%';
             for (const [key, value] of Object.entries(result.details)) {
@@ -464,17 +491,13 @@
 
         function clearDetails(keepEr = false) {
              const detailsContainer = document.querySelector('#results .grid');
-             if(!keepEr) {
-                detailsContainer.innerHTML = '';
-             } else {
-                 const erEl = document.getElementById('er_percent').parentElement.outerHTML;
-                 detailsContainer.innerHTML = erEl;
-             }
+             if(!keepEr) { detailsContainer.innerHTML = ''; } 
+             else { detailsContainer.innerHTML = document.getElementById('er_percent').parentElement.outerHTML; }
         }
         
         function calculateScore(data) {
             const { likes, retweets, quotes, impressions, followers, smart_followers, smart_engagement, posts } = data;
-            let result = { finalScore: 0, er_percent: 0, penaltyInfo: '', disqualified: false, ineligible: false };
+            let result = { finalScore: 0, er_percent: 0, penaltyInfo: '', disqualified: false, ineligible: false, details: {} };
             if (posts < 2 || impressions <= 0) { result.ineligible = true; return result; }
             result.er_percent = impressions > 0 ? ((likes + retweets + quotes) / impressions) * 100 : 0;
             if (result.er_percent > 20) { result.disqualified = true; return result; }
@@ -501,7 +524,6 @@
             result.details = {srm, sf, imp, qW, eng: eng_raw, engObs, er_cap, effEng, clamp, seng, qe, postMult, erMult, engageBlock};
             return result;
         }
-
     </script>
 </body>
 </html>
