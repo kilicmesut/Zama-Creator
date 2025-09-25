@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zama Creator Programı Puan Hesaplayıcı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Twitter Widget Script -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .result-value {
+            transition: color 0.3s ease-in-out;
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+          -webkit-appearance: none; 
+          margin: 0; 
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+        .tab-btn.active {
+            border-bottom-color: #facc15; /* yellow-400 */
+            color: white;
+        }
+        .tab-btn {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 2px solid transparent;
+        }
+        /* Twitter embed'leri için stil */
+        #tweet-previews-container {
+            height: 100vh; /* Ekran yüksekliği kadar */
+            overflow-y: auto; /* Dikey scrollbar */
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-200 flex flex-col items-center min-h-screen p-4">
+
+    <!-- Header -->
+    <header class="w-full max-w-7xl mx-auto px-4 sm:px-0">
+        <h1 class="text-3xl font-bold text-white tracking-wider">ZAMA</h1>
+        <div class="mt-2 border-t-4 border-yellow-400 w-full"></div>
+    </header>
+    
+    <main class="w-full max-w-7xl mx-auto mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Sol Taraf (Hesaplayıcı ve Liderlik Tablosu) -->
+        <div class="lg:col-span-2">
+            <div class="text-left mb-8">
+                <h2 class="text-4xl font-bold text-white mb-2">Creator Program Score Calculator</h2>
+                <p class="text-lg text-gray-400">Puanınızı hesaplayın ve liderlik tablosundaki yerinizi alın.</p>
+            </div>
+
+            <!-- Sekmeli Arayüz -->
+            <div class="mb-6 flex space-x-4 border-b border-gray-800">
+                <button id="calculatorTabBtn" class="tab-btn active text-lg font-semibold pb-2 px-1">Hesaplayıcı</button>
+                <button id="leaderboardTabBtn" class="tab-btn text-lg font-semibold text-gray-500 pb-2 px-1">Liderlik Tablosu</button>
+            </div>
+
+            <!-- HESAPLAYICI İÇERİĞİ -->
+            <div id="calculatorContent">
+                <!-- Ana Kart -->
+                <div class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6 md:p-8">
+                    <!-- Girdi Alanları -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <div><label for="likes" class="block text-sm font-medium text-gray-400 mb-1">Beğeni Sayısı</label><input type="number" id="likes" placeholder="150" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="retweets" class="block text-sm font-medium text-gray-400 mb-1">Retweet Sayısı</label><input type="number" id="retweets" placeholder="25" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="quotes" class="block text-sm font-medium text-gray-400 mb-1">Alıntı Sayısı</label><input type="number" id="quotes" placeholder="10" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="impressions" class="block text-sm font-medium text-gray-400 mb-1">Gösterim Sayısı</label><input type="number" id="impressions" placeholder="120000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="followers" class="block text-sm font-medium text-gray-400 mb-1">Toplam Takipçi</label><input type="number" id="followers" placeholder="5000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="smart_followers" class="block text-sm font-medium text-gray-400 mb-1">Akıllı Takipçi</label><input type="number" id="smart_followers" placeholder="1200" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="smart_engagement" class="block text-sm font-medium text-gray-400 mb-1">Akıllı Etkileşim</label><input type="number" id="smart_engagement" placeholder="50" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                        <div><label for="posts" class="block text-sm font-medium text-gray-400 mb-1">Toplam Gönderi</label><input type="number" id="posts" placeholder="15" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition"></div>
+                    </div>
+                    <div class="text-center">
+                        <button id="calculateBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg">Puanı Hesapla</button>
+                    </div>
+                </div>
+
+                <!-- Sonuç ve Onay Alanı -->
+                <div id="results" class="hidden mt-8 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6 md:p-8">
+                     <h2 class="text-2xl font-bold text-white mb-6 text-center">Hesaplama Sonuçları</h2>
+                     <div class="text-center mb-8 p-6 bg-black rounded-lg">
+                        <p class="text-lg text-gray-400 mb-2">Nihai Puanınız</p>
+                        <p id="finalScore" class="text-5xl font-bold text-yellow-400 result-value"></p>
+                        <p id="penaltyInfo" class="text-sm text-yellow-500 mt-2"></p>
+                    </div>
+                    <div id="approvalSection" class="hidden mt-6 text-center border-t border-gray-700 pt-6">
+                        <h3 class="text-lg font-semibold text-white mb-4">Puanını Liderlik Tablosuna Ekle</h3>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <input type="text" id="username" placeholder="Kullanıcı adınızı girin" class="w-full sm:w-64 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
+                            <button id="approveBtn" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105">Onayla ve Ekle</button>
+                        </div>
+                        <p id="approvalMessage" class="text-sm mt-3"></p>
+                    </div>
+                    <div class="border-t border-gray-700 pt-6 mt-8">
+                        <h3 class="text-xl font-semibold text-white mb-4">Detaylı Analiz</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm"><!-- Detaylar --></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- LİDERLİK TABLOSU İÇERİĞİ -->
+            <div id="leaderboardContent" class="hidden">
+                 <div class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6 md:p-8">
+                    <h2 class="text-2xl font-bold text-white mb-6 text-center">Liderlik Tablosu</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left">
+                            <thead class="border-b border-gray-700">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 font-medium text-gray-300">Sıra</th>
+                                    <th scope="col" class="px-4 py-3 font-medium text-gray-300">Kullanıcı</th>
+                                    <th scope="col" class="px-4 py-3 font-medium text-gray-300 text-right">Puan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardBody"></tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf (Gönderi Paylaşımı ve Önizlemeler) -->
+        <div class="lg:col-span-1">
+             <div class="sticky top-8">
+                <!-- Gönderi Paylaşım Kartı -->
+                <div class="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Günün Gönderisini Paylaş</h3>
+                    <p class="text-sm text-gray-400 mb-4">Herkesin görmesi için X gönderi linkinizi buraya yapıştırın. Günde sadece bir gönderi paylaşabilirsiniz.</p>
+                    <div class="flex flex-col gap-3">
+                        <input type="text" id="submitUsername" placeholder="Kullanıcı Adınız" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
+                        <input type="url" id="tweetUrl" placeholder="https://x.com/kullanici/status/..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-yellow-400 focus:outline-none transition">
+                        <button id="submitTweetBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">Gönder</button>
+                    </div>
+                    <p id="tweetSubmitMessage" class="text-sm text-center mt-3"></p>
+                </div>
+
+                <!-- Gönderi Önizlemeleri -->
+                <div id="tweet-previews-container" class="mt-6 space-y-4">
+                    <p id="tweet-loader" class="text-center text-gray-500 py-10">Gönderiler yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        // Firebase SDK'larını içe aktar
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAD9xtuKXczPUEoNF3Y73foQMfaW6Xbodg",
+            authDomain: "zama-creator-app.firebaseapp.com",
+            projectId: "zama-creator-app",
+            storageBucket: "zama-creator-app.firebasestorage.app",
+            messagingSenderId: "207286492429",
+            appId: "1:207286492429:web:b2e0e457daa0ba29ee2444",
+            measurementId: "G-HRNV0MCJC9"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let lastCalculatedScore = null;
+        // Element referansları...
+        const approveBtn = document.getElementById('approveBtn');
+        const submitTweetBtn = document.getElementById('submitTweetBtn');
+        
+        // --- BUTTON FIX: PUAN ONAYLAMA ---
+        approveBtn.addEventListener('click', async () => {
+            const usernameInput = document.getElementById('username');
+            const username = usernameInput.value.trim();
+            if (!username) { alert("Lütfen bir kullanıcı adı girin."); return; }
+            if (lastCalculatedScore === null) { alert("Önce bir puan hesaplamalısınız."); return; }
+
+            approveBtn.disabled = true;
+            approveBtn.textContent = "Ekleniyor...";
+            
+            try {
+                await addDoc(collection(db, "leaderboard"), {
+                    name: username,
+                    score: lastCalculatedScore,
+                    createdAt: serverTimestamp()
+                });
+
+                approveBtn.textContent = "Eklendi!";
+                approveBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                approveBtn.classList.add('bg-blue-500');
+                document.getElementById('approvalMessage').textContent = "Puanınız liderlik tablosuna başarıyla eklendi!";
+                document.getElementById('approvalMessage').classList.add('text-green-400');
+                
+                usernameInput.value = '';
+                lastCalculatedScore = null;
+
+                setTimeout(() => {
+                    document.getElementById('approvalSection').classList.add('hidden');
+                    approveBtn.disabled = false;
+                    approveBtn.textContent = "Onayla ve Ekle";
+                    approveBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    approveBtn.classList.remove('bg-blue-500');
+                }, 2500);
+
+            } catch (error) {
+                console.error("Puan eklenirken hata oluştu: ", error);
+                document.getElementById('approvalMessage').textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
+                document.getElementById('approvalMessage').classList.add('text-red-500');
+                approveBtn.disabled = false;
+                approveBtn.textContent = "Onayla ve Ekle";
+            }
+        });
+        
+        // --- YENİ: GÖNDERİ PAYLAŞMA ---
+        submitTweetBtn.addEventListener('click', async () => {
+            const username = document.getElementById('submitUsername').value.trim();
+            const tweetUrl = document.getElementById('tweetUrl').value.trim();
+            const messageEl = document.getElementById('tweetSubmitMessage');
+
+            if(!username || !tweetUrl) {
+                messageEl.textContent = "Kullanıcı adı ve gönderi linki zorunludur.";
+                messageEl.className = 'text-sm text-center mt-3 text-red-500';
+                return;
+            }
+
+            // URL formatını kontrol et
+            if (!/^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+/.test(tweetUrl)) {
+                 messageEl.textContent = "Lütfen geçerli bir X gönderi linki girin.";
+                 messageEl.className = 'text-sm text-center mt-3 text-red-500';
+                 return;
+            }
+            
+            // LocalStorage ile günlük limit kontrolü
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const lastSubmission = localStorage.getItem('lastTweetSubmissionDate');
+            if (lastSubmission === today) {
+                messageEl.textContent = "Bugün zaten bir gönderi paylaştınız.";
+                messageEl.className = 'text-sm text-center mt-3 text-yellow-500';
+                return;
+            }
+
+            submitTweetBtn.disabled = true;
+            submitTweetBtn.textContent = "Gönderiliyor...";
+            messageEl.textContent = "";
+
+            try {
+                await addDoc(collection(db, "daily_posts"), {
+                    username: username,
+                    postUrl: tweetUrl,
+                    submittedAt: serverTimestamp()
+                });
+                
+                localStorage.setItem('lastTweetSubmissionDate', today);
+                messageEl.textContent = "Gönderiniz başarıyla paylaşıldı!";
+                messageEl.className = 'text-sm text-center mt-3 text-green-400';
+                document.getElementById('tweetUrl').value = '';
+
+            } catch (error) {
+                console.error("Gönderi paylaşılırken hata: ", error);
+                messageEl.textContent = "Bir hata oluştu. Tekrar deneyin.";
+                messageEl.className = 'text-sm text-center mt-3 text-red-500';
+            } finally {
+                 setTimeout(() => {
+                    submitTweetBtn.disabled = false;
+                    submitTweetBtn.textContent = "Gönder";
+                    messageEl.textContent = "";
+                }, 3000);
+            }
+        });
+        
+        // --- YENİ: GÖNDERİ ÖNİZLEMELERİNİ YÜKLEME ---
+        const postsQuery = query(collection(db, "daily_posts"), orderBy("submittedAt", "desc"));
+        onSnapshot(postsQuery, (snapshot) => {
+            const container = document.getElementById('tweet-previews-container');
+            container.innerHTML = ''; // Her güncellemede temizle
+            document.getElementById('tweet-loader')?.remove();
+
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-10">Henüz paylaşılan gönderi yok.</p>';
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const post = doc.data();
+                const tweetId = post.postUrl.split('status/')[1].split('?')[0];
+
+                if(tweetId) {
+                    const tweetContainer = document.createElement('div');
+                    tweetContainer.className = 'tweet-embed-container';
+
+                    const blockquote = document.createElement('blockquote');
+                    blockquote.className = 'twitter-tweet';
+                    blockquote.setAttribute('data-theme', 'dark');
+
+                    const link = document.createElement('a');
+                    link.href = post.postUrl;
+                    link.textContent = `Loading tweet by ${post.username}...`;
+
+                    blockquote.appendChild(link);
+                    tweetContainer.appendChild(blockquote);
+                    container.appendChild(tweetContainer);
+                }
+            });
+
+            // Twitter'ın widget scriptini yeniden yükleterek embed'leri oluştur
+            if (typeof twttr !== 'undefined' && twttr.widgets) {
+                twttr.widgets.load(container);
+            }
+        });
+
+
+        // Geri kalan tüm JavaScript kodu (calculateScore, sekmeler vb.) buraya gelecek...
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultsDiv = document.getElementById('results');
+        const approvalSection = document.getElementById('approvalSection');
+        const approvalMessage = document.getElementById('approvalMessage');
+        const calculatorTabBtn = document.getElementById('calculatorTabBtn');
+        const leaderboardTabBtn = document.getElementById('leaderboardTabBtn');
+        const calculatorContent = document.getElementById('calculatorContent');
+        const leaderboardContent = document.getElementById('leaderboardContent');
+
+        calculatorTabBtn.addEventListener('click', () => {
+            calculatorContent.classList.remove('hidden');
+            leaderboardContent.classList.add('hidden');
+            calculatorTabBtn.classList.add('active', 'text-white');
+            calculatorTabBtn.classList.remove('text-gray-500');
+            leaderboardTabBtn.classList.remove('active', 'text-white');
+            leaderboardTabBtn.classList.add('text-gray-500');
+        });
+
+        leaderboardTabBtn.addEventListener('click', () => {
+            leaderboardContent.classList.remove('hidden');
+            calculatorContent.classList.add('hidden');
+            leaderboardTabBtn.classList.add('active', 'text-white');
+            leaderboardTabBtn.classList.remove('text-gray-500');
+            calculatorTabBtn.classList.remove('active', 'text-white');
+            calculatorTabBtn.classList.add('text-gray-500');
+        });
+
+        const leaderboardCollection = collection(db, "leaderboard");
+        const q = query(leaderboardCollection, orderBy("score", "desc"));
+
+        onSnapshot(q, (snapshot) => {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            leaderboardBody.innerHTML = '';
+            if (snapshot.empty) {
+                leaderboardBody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-gray-500">Henüz sıralamada kimse yok. İlk sen ol!</td></tr>';
+                return;
+            }
+            snapshot.forEach((doc, index) => {
+                const data = doc.data();
+                const rank = index + 1;
+                const rowClass = rank <= 3 ? 'bg-yellow-500/10' : '';
+
+                const row = `
+                    <tr class="border-b border-gray-800 ${rowClass}">
+                        <td class="px-4 py-3 font-medium">${rank}</td>
+                        <td class="px-4 py-3">${data.name}</td>
+                        <td class="px-4 py-3 font-mono text-right text-yellow-400">${data.score.toFixed(2)}</td>
+                    </tr>
+                `;
+                leaderboardBody.innerHTML += row;
+            });
+        });
+
+        calculateBtn.addEventListener('click', () => {
+            const inputData = {
+                likes: Number(document.getElementById('likes').value) || 0,
+                retweets: Number(document.getElementById('retweets').value) || 0,
+                quotes: Number(document.getElementById('quotes').value) || 0,
+                impressions: Number(document.getElementById('impressions').value) || 0,
+                followers: Number(document.getElementById('followers').value) || 0,
+                smart_followers: Number(document.getElementById('smart_followers').value) || 0,
+                smart_engagement: Number(document.getElementById('smart_engagement').value) || 0,
+                posts: Number(document.getElementById('posts').value) || 0
+            };
+            
+            const result = calculateScore(inputData);
+            
+            resultsDiv.classList.remove('hidden');
+            approvalSection.classList.add('hidden');
+            approvalMessage.textContent = '';
+            
+            const finalScoreEl = document.getElementById('finalScore');
+            const penaltyInfoEl = document.getElementById('penaltyInfo');
+
+            finalScoreEl.classList.remove('text-red-500', 'text-yellow-400');
+            penaltyInfoEl.textContent = result.penaltyInfo;
+
+            if (result.ineligible) {
+                finalScoreEl.textContent = "Uygun Değil";
+                finalScoreEl.classList.add('text-red-500');
+                penaltyInfoEl.textContent = "Liderlik tablosu için en az 2 gönderi ve 0'dan fazla gösterim gereklidir.";
+                clearDetails();
+                return;
+            }
+            
+            if (result.disqualified) {
+                finalScoreEl.textContent = "0 (Diskalifiye)";
+                finalScoreEl.classList.add('text-red-500');
+                penaltyInfoEl.textContent = "Etkileşim Oranı (ER%) %20'yi aştığı için puan sıfırlandı.";
+                document.getElementById('er_percent').textContent = result.er_percent.toFixed(2) + '%';
+                clearDetails(true);
+                return;
+            }
+
+            finalScoreEl.textContent = result.finalScore.toFixed(2);
+            finalScoreEl.classList.add('text-yellow-400');
+
+            document.querySelector('#results .grid').innerHTML = `
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ER% (Etkileşim Oranı):</span><span id="er_percent" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SRM (Ölçek Oranı Ç.):</span><span id="srm" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SF (Akıllı Takipçi F.):</span><span id="sf" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">IMP (Gösterim Karekökü):</span><span id="imp" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">qW (Alıntı Ağırlığı):</span><span id="qW" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ENG (Ham Etkileşim):</span><span id="eng" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">EngObs (Gözlemlenen Etk.):</span><span id="engObs" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">ER_cap (ER Limiti):</span><span id="er_cap" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">EffEng (Etkin Etkileşim):</span><span id="effEng" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">Clamp (Sıkıştırma):</span><span id="clamp" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">SENG (Akıllı Etk. Puanı):</span><span id="seng" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">QE (Erişim Verimliliği):</span><span id="qe" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">postMult (Gönderi Ç.):</span><span id="postMult" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md"><span class="font-medium text-gray-400">erMult (ER Çarpanı):</span><span id="erMult" class="font-mono float-right text-gray-300"></span></div>
+                <div class="p-3 bg-gray-800/50 rounded-md col-span-2 md:col-span-1"><span class="font-medium text-gray-400">engageBlock (Etkileşim B.):</span><span id="engageBlock" class="font-mono float-right text-gray-300"></span></div>
+            `;
+            
+            document.getElementById('er_percent').textContent = result.er_percent.toFixed(2) + '%';
+            for (const [key, value] of Object.entries(result.details)) {
+                const el = document.getElementById(key);
+                if (el) {
+                    let displayValue = '';
+                    if (['postMult', 'erMult'].includes(key)) displayValue = 'x' + value.toFixed(2);
+                    else if (key === 'er_cap') displayValue = (value * 100).toFixed(2) + '%';
+                    else if (Number.isInteger(value)) displayValue = value;
+                    else displayValue = value.toFixed(value > 1 ? 2 : 4);
+                    el.textContent = displayValue;
+                }
+            }
+
+            if (!result.ineligible && !result.disqualified) {
+                lastCalculatedScore = result.finalScore; 
+                approvalSection.classList.remove('hidden');
+            }
+        });
+
+        function clearDetails(keepEr = false) {
+             const detailsContainer = document.querySelector('#results .grid');
+             if(!keepEr) {
+                detailsContainer.innerHTML = '';
+             } else {
+                 const erEl = document.getElementById('er_percent').parentElement.outerHTML;
+                 detailsContainer.innerHTML = erEl;
+             }
+        }
+        
+        function calculateScore(data) {
+            const { likes, retweets, quotes, impressions, followers, smart_followers, smart_engagement, posts } = data;
+            let result = { finalScore: 0, er_percent: 0, penaltyInfo: '', disqualified: false, ineligible: false };
+            if (posts < 2 || impressions <= 0) { result.ineligible = true; return result; }
+            result.er_percent = impressions > 0 ? ((likes + retweets + quotes) / impressions) * 100 : 0;
+            if (result.er_percent > 20) { result.disqualified = true; return result; }
+            const srm = Math.min(1, impressions / 100000);
+            const sf = Math.min(Math.log10(smart_followers + 1), 3.0);
+            const imp = Math.sqrt(impressions);
+            const qW = 4 + 2 * srm;
+            const eng_raw = likes + 3 * retweets + qW * quotes;
+            const engObs = Math.max(eng_raw, (result.er_percent / 100) * impressions);
+            const er_cap = 0.01 + 0.04 * srm;
+            const effEng = Math.min(engObs, impressions * er_cap);
+            const clamp = engObs > 0 ? effEng / engObs : 1;
+            const seng = Math.min(smart_engagement, 0.5 * effEng);
+            const qe = Math.min(Math.log(1 + impressions / Math.max(followers, 1)), 2.0) * srm;
+            const postMult = 1 + 0.02 * Math.min(posts, 20);
+            const erMult = 0.90 + 2 * Math.min(result.er_percent / 100, 0.05);
+            const engageBlock = ((eng_raw * 0.7) * clamp + (seng * 150)) * Math.pow(srm, 1.5);
+            const baseScore = (sf * 500) + (imp * 10) + engageBlock + (qe * 120);
+            result.finalScore = baseScore * erMult * postMult;
+            if (result.er_percent > 10 && impressions < 50000) {
+                result.finalScore *= 0.30;
+                result.penaltyInfo = "ER% > 10 ve Gösterim < 50k olduğu için 0.30x ceza uygulandı.";
+            }
+            result.details = {srm, sf, imp, qW, eng: eng_raw, engObs, er_cap, effEng, clamp, seng, qe, postMult, erMult, engageBlock};
+            return result;
+        }
+
+    </script>
+</body>
+</html>
+
