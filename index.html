@@ -49,6 +49,21 @@
             background-color: #facc15; /* yellow-400 */
             color: #111827; /* gray-900 */
         }
+        .tweet-embed-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+        }
+        .tweet-embed-wrapper::-webkit-scrollbar {
+            width: 5px;
+        }
+        .tweet-embed-wrapper::-webkit-scrollbar-track {
+            background: #1f2937; /* gray-800 */
+        }
+        .tweet-embed-wrapper::-webkit-scrollbar-thumb {
+            background: #4b5563; /* gray-600 */
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body class="bg-black text-gray-200 flex flex-col items-center min-h-screen p-4">
@@ -208,7 +223,7 @@
             'leaderboard-user': { tr: 'Kullanıcı', en: 'User' },
             'leaderboard-score': { tr: 'Puan', en: 'Score' },
             'share-title': { tr: 'Günün Gönderisini Paylaş', en: 'Share Post of the Day' },
-            'share-subtitle': { tr: 'Herkesin görmesi için X gönderi linkinizi buraya yapıştırın. Günde sadece bir gönderi paylaşabilirsiniz.', en: 'Paste your X post link here for everyone to see. You can only share one post per day.' },
+            'share-subtitle': { tr: 'Herkesin görmesi için X gönderi linkinizi buraya yapıştırın. Günde sadece bir gönderi paylaşebilirsiniz.', en: 'Paste your X post link here for everyone to see. You can only share one post per day.' },
             'share-username-placeholder': { tr: 'Kullanıcı Adınız', en: 'Your Username' },
             'btn-share': { tr: 'Gönder', en: 'Submit' },
             'posts-loading': { tr: 'Gönderiler yükleniyor...', en: 'Loading posts...' },
@@ -384,6 +399,7 @@
                     postCard.className = 'bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-4';
                     
                     const tweetContainer = document.createElement('div');
+                    tweetContainer.className = 'tweet-embed-wrapper';
                     twttr.widgets.createTweet(tweetId, tweetContainer, { theme: 'dark', conversation: 'none', dnt: true });
 
                     const actionsBar = document.createElement('div');
