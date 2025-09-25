@@ -172,7 +172,7 @@
         const approveBtn = document.getElementById('approveBtn');
         const submitTweetBtn = document.getElementById('submitTweetBtn');
         
-        // --- BUTTON FIX: PUAN ONAYLAMA ---
+        // --- PUAN ONAYLAMA ---
         approveBtn.addEventListener('click', async () => {
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
@@ -204,6 +204,8 @@
                     approveBtn.textContent = "Onayla ve Ekle";
                     approveBtn.classList.add('bg-green-600', 'hover:bg-green-700');
                     approveBtn.classList.remove('bg-blue-500');
+                    document.getElementById('approvalMessage').textContent = "";
+                    document.getElementById('approvalMessage').classList.remove('text-green-400', 'text-red-500');
                 }, 2500);
 
             } catch (error) {
@@ -215,27 +217,27 @@
             }
         });
         
-        // --- YENİ: GÖNDERİ PAYLAŞMA ---
+        // --- GÖNDERİ PAYLAŞMA ---
         submitTweetBtn.addEventListener('click', async () => {
-            const username = document.getElementById('submitUsername').value.trim();
-            const tweetUrl = document.getElementById('tweetUrl').value.trim();
+            const usernameInput = document.getElementById('submitUsername');
+            const tweetUrlInput = document.getElementById('tweetUrl');
+            const username = usernameInput.value.trim();
+            const tweetUrl = tweetUrlInput.value.trim();
             const messageEl = document.getElementById('tweetSubmitMessage');
 
             if(!username || !tweetUrl) {
-                messageEl.textContent = "Kullanıcı adı ve gönderi linki zorunudur.";
+                messageEl.textContent = "Kullanıcı adı ve gönderi linki zorunludur.";
                 messageEl.className = 'text-sm text-center mt-3 text-red-500';
                 return;
             }
 
-            // URL formatını kontrol et
             if (!/^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+/.test(tweetUrl)) {
                  messageEl.textContent = "Lütfen geçerli bir X gönderi linki girin.";
                  messageEl.className = 'text-sm text-center mt-3 text-red-500';
                  return;
             }
             
-            // LocalStorage ile günlük limit kontrolü
-            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
             const lastSubmission = localStorage.getItem('lastTweetSubmissionDate');
             if (lastSubmission === today) {
                 messageEl.textContent = "Bugün zaten bir gönderi paylaştınız.";
@@ -255,9 +257,13 @@
                 });
                 
                 localStorage.setItem('lastTweetSubmissionDate', today);
+                submitTweetBtn.textContent = "Gönderildi!";
+                submitTweetBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitTweetBtn.classList.add('bg-green-600');
                 messageEl.textContent = "Gönderiniz başarıyla paylaşıldı!";
                 messageEl.className = 'text-sm text-center mt-3 text-green-400';
-                document.getElementById('tweetUrl').value = '';
+                tweetUrlInput.value = '';
+                usernameInput.value = '';
 
             } catch (error) {
                 console.error("Gönderi paylaşılırken hata: ", error);
@@ -267,16 +273,18 @@
                  setTimeout(() => {
                     submitTweetBtn.disabled = false;
                     submitTweetBtn.textContent = "Gönder";
+                    submitTweetBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    submitTweetBtn.classList.remove('bg-green-600');
                     messageEl.textContent = "";
                 }, 3000);
             }
         });
         
-        // --- YENİ: GÖNDERİ ÖNİZLEMELERİNİ YÜKLEME ---
+        // --- GÖNDERİ ÖNİZLEMELERİNİ YÜKLEME ---
         const postsQuery = query(collection(db, "daily_posts"), orderBy("submittedAt", "desc"));
         onSnapshot(postsQuery, (snapshot) => {
             const container = document.getElementById('tweet-previews-container');
-            container.innerHTML = ''; // Her güncellemede temizle
+            container.innerHTML = ''; 
             document.getElementById('tweet-loader')?.remove();
 
             if (snapshot.empty) {
@@ -286,7 +294,7 @@
 
             snapshot.forEach(doc => {
                 const post = doc.data();
-                const tweetId = post.postUrl.split('status/')[1].split('?')[0];
+                const tweetId = post.postUrl.split('status/')[1]?.split('?')[0];
 
                 if(tweetId) {
                     const tweetContainer = document.createElement('div');
@@ -306,10 +314,16 @@
                 }
             });
 
-            // Twitter'ın widget scriptini yeniden yükleterek embed'leri oluştur
             if (typeof twttr !== 'undefined' && twttr.widgets) {
                 twttr.widgets.load(container);
             }
+        }, (error) => {
+            console.error("Gönderiler yüklenirken Firestore hatası: ", error);
+            const container = document.getElementById('tweet-previews-container');
+            container.innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center">
+                <p class="font-semibold text-red-300">Gönderiler Yüklenemedi</p>
+                <p class="text-sm text-red-400 mt-1">Bir hata oluştu. Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi sorunudur.)</p>
+            </div>`;
         });
 
 
@@ -491,3 +505,4 @@
     </script>
 </body>
 </html>
+
