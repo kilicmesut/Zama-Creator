@@ -155,6 +155,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // ************************************************************************************
+        // ÖNEMLİ NOT: EĞER VERİLER (PUAN/GÖNDERİ) KAYDEDİLMİYORSA,
+        // FIREBASE KONSOLUNDA Firestore > Rules (Kurallar) BÖLÜMÜNÜN
+        // AŞAĞIDAKİ GİBİ OLDUĞUNDAN EMİN OLUN:
+        //
+        // rules_version = '2';
+        // service cloud.firestore {
+        //   match /databases/{database}/documents {
+        //     match /{document=**} {
+        //       allow read, write: if true;
+        //     }
+        //   }
+        // }
+        // ************************************************************************************
         const firebaseConfig = {
             apiKey: "AIzaSyAD9xtuKXczPUEoNF3Y73foQMfaW6Xbodg",
             authDomain: "zama-creator-app.firebaseapp.com",
@@ -174,14 +188,16 @@
         
         // --- PUAN ONAYLAMA ---
         approveBtn.addEventListener('click', async () => {
-            // ... (Mevcut kod aynı kalıyor, zaten doğru çalışıyor)
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
+            const approvalMessage = document.getElementById('approvalMessage');
+
             if (!username) { alert("Lütfen bir kullanıcı adı girin."); return; }
             if (lastCalculatedScore === null) { alert("Önce bir puan hesaplamalısınız."); return; }
 
             approveBtn.disabled = true;
             approveBtn.textContent = "Ekleniyor...";
+            approvalMessage.textContent = "";
             
             try {
                 await addDoc(collection(db, "leaderboard"), {
@@ -194,7 +210,6 @@
                 approveBtn.classList.replace('bg-green-600', 'bg-blue-500');
                 approveBtn.classList.replace('hover:bg-green-700', 'bg-blue-500');
                 
-                const approvalMessage = document.getElementById('approvalMessage');
                 approvalMessage.textContent = "Puanınız liderlik tablosuna başarıyla eklendi!";
                 approvalMessage.className = 'text-sm mt-3 text-green-400';
                 
@@ -211,9 +226,9 @@
                 }, 2500);
 
             } catch (error) {
-                console.error("Puan eklenirken hata oluştu: ", error);
-                document.getElementById('approvalMessage').textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
-                document.getElementById('approvalMessage').className = 'text-sm mt-3 text-red-500';
+                console.error("Firebase Yazma Hatası (Puan): ", error);
+                approvalMessage.textContent = "Bir hata oluştu. Veritabanı kurallarınızı kontrol edin.";
+                approvalMessage.className = 'text-sm mt-3 text-red-500';
                 approveBtn.disabled = false;
                 approveBtn.textContent = "Onayla ve Ekle";
             }
@@ -221,7 +236,6 @@
         
         // --- GÖNDERİ PAYLAŞMA ---
         submitTweetBtn.addEventListener('click', async () => {
-            // ... (Mevcut kod aynı kalıyor, zaten doğru çalışıyor)
             const usernameInput = document.getElementById('submitUsername');
             const tweetUrlInput = document.getElementById('tweetUrl');
             const username = usernameInput.value.trim();
@@ -259,8 +273,8 @@
                 messageEl.className = 'text-sm text-center mt-3 text-green-400';
                 tweetUrlInput.value = ''; usernameInput.value = '';
             } catch (error) {
-                console.error("Gönderi paylaşılırken hata: ", error);
-                messageEl.textContent = "Bir hata oluştu. Tekrar deneyin.";
+                console.error("Firebase Yazma Hatası (Gönderi): ", error);
+                messageEl.textContent = "Bir hata oluştu. Veritabanı kurallarınızı kontrol edin.";
                 messageEl.className = 'text-sm text-center mt-3 text-red-500';
             } finally {
                  setTimeout(() => {
@@ -297,6 +311,7 @@
                     postCard.className = 'bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-4';
                     
                     const tweetContainer = document.createElement('div');
+                    // GÖNDERİ ÖNİZLEMESİ: Twitter'ın kendi scriptiyle oluşturuluyor.
                     twttr.widgets.createTweet(tweetId, tweetContainer, { theme: 'dark', conversation: 'none', dnt: true });
 
                     const actionsBar = document.createElement('div');
@@ -328,7 +343,7 @@
 
         }, (error) => {
             console.error("Gönderiler yüklenirken Firestore hatası: ", error);
-            document.getElementById('tweet-previews-container').innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center"><p class="font-semibold text-red-300">Gönderiler Yüklenemedi</p><p class="text-sm text-red-400 mt-1">Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi sorunudur.)</p></div>`;
+            document.getElementById('tweet-previews-container').innerHTML = `<div class="p-4 bg-red-900/50 border border-red-700 rounded-lg text-center"><p class="font-semibold text-red-300">Gönderiler Yüklenemedi</p><p class="text-sm text-red-400 mt-1">Lütfen tarayıcı konsolunu kontrol edin. (Genellikle eksik bir Firestore indeksi veya kural sorunudur.)</p></div>`;
         });
         
         async function handleLike(postId) {
@@ -341,7 +356,7 @@
                 likedPosts.push(postId);
                 localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
                 document.querySelector(`button[onclick="handleLike('${postId}')"]`).classList.add('liked');
-            } catch (e) { console.error("Beğenme hatası: ", e); }
+            } catch (e) { console.error("Firebase Yazma Hatası (Beğeni): ", e); }
         }
 
         async function toggleComments(postId) {
@@ -365,9 +380,19 @@
                 const username = document.getElementById(`comment-user-${postId}`).value.trim();
                 const text = document.getElementById(`comment-text-${postId}`).value.trim();
                 if (!username || !text) return;
-                await addDoc(collection(db, `daily_posts/${postId}/comments`), { username, text, createdAt: serverTimestamp() });
-                toggleComments(postId); 
-                toggleComments(postId);
+
+                try {
+                    await addDoc(collection(db, `daily_posts/${postId}/comments`), { username, text, createdAt: serverTimestamp() });
+                    // Yorum eklendikten sonra bölümü yenile
+                    const currentlyOpen = !commentsSection.classList.contains('hidden');
+                    if(currentlyOpen) {
+                        toggleComments(postId); // Kapat
+                        toggleComments(postId); // Tekrar aç ve yenile
+                    }
+                } catch(e) {
+                     console.error("Firebase Yazma Hatası (Yorum): ", e);
+                     alert("Yorum gönderilemedi. Lütfen veritabanı kurallarınızı kontrol edin.");
+                }
             };
 
             const commentsList = document.getElementById(`comments-list-${postId}`);
